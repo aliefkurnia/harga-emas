@@ -9,6 +9,7 @@ import dollar from "./images/dollar.png";
 import rupiah from "./images/indonesian-rupiah.png";
 import bi from "./images/BI.png";
 import GradientCircularProgress from "./GradientCircularProgress"; // Import the GradientCircularProgress component
+import PurchasePopup from "./PurchasePopup"; // Import the new component
 
 const ColorModeContext = React.createContext({ toggleColorMode: () => {} });
 
@@ -34,7 +35,7 @@ function App() {
 
   React.useEffect(() => {
     fetchData();
-  }, []);
+  }, [currency, grams]);
 
   const handleCalculate = () => {
     if (!grams || isNaN(grams) || grams <= 0) {
@@ -194,6 +195,7 @@ function App() {
             <GradientCircularProgress />
           </div>
         )}
+        <PurchasePopup />
       </main>
       <footer
         className="App-footer"

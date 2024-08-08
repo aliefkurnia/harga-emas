@@ -157,3 +157,12 @@
   height: 100%; /* Ensures it fills the available space in its parent */
   box-sizing: border-box; /* Includes padding and border in the element's total width and height */
 }
+/* App.css */
+.purchase-popup-link {
+  color: inherit; /* Default color */
+  text-decoration: none; /* Remove underline */
+}
+
+.purchase-popup-link:hover {
+  color: #c38154; /* Change this color to whatever you want on hover */
+}
