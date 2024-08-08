@@ -1,38 +1,159 @@
 .App {
-  text-align: center;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  font-family: Arial, sans-serif;
+  background-color: #f9e0bb; /* Light beige background color */
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
+.App-content {
+  display: flex;
+  flex-direction: column;
+  flex: 1; /* Allows content to expand and push footer down */
+  align-items: center;
+  justify-content: center;
 }
 
 .App-header {
-  background-color: #282c34;
-  min-height: 100vh;
   display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
+  justify-content: space-between; /* Space between title and button */
+  align-items: center; /* Center items vertically */
+  padding: 20px;
+  background-color: #884a39; /* Dark brown background */
   color: white;
+  text-align: center;
 }
 
-.App-link {
-  color: #61dafb;
+.App-header h1 {
+  margin: 0; /* Remove default margin */
+  flex-grow: 1; /* Make sure the title takes available space */
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+.App-footer {
+  background-color: #884a39; /* Dark brown background */
+  color: white;
+  text-align: center;
+  padding: 10px;
+  margin-top: auto; /* Pushes footer to the bottom */
+}
+
+.card-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin: 20px 0;
+}
+
+.error {
+  color: #ff6b6b; /* red */
+  text-align: center;
+}
+
+.loading {
+  text-align: center;
+  font-size: 1.2em;
+}
+
+.calculator {
+  width: 100%; /* Full width of the page */
+}
+
+.calculator-container {
+  max-width: 1000px; /* Adjust the max-width as needed */
+  margin: 0 auto; /* Center the container horizontally */
+  padding: 0 20px; /* Padding to prevent content from touching edges */
+  box-sizing: border-box; /* Include padding in width calculation */
+}
+
+.calculator-form {
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.form-group {
+  margin-bottom: 15px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 5px;
+}
+
+.form-group input,
+.form-group select {
+  width: 100%;
+  padding: 8px;
+  box-sizing: border-box;
+  border-radius: 4px;
+}
+
+.calculate-button {
+  padding: 10px 15px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 1em;
+  border: none;
+}
+
+.calculate-button:hover {
+  background-color: #c38154; /* medium brown */
+}
+
+.result {
+  margin-top: 15px;
+  text-align: center;
+}
+
+.form-error {
+  color: red;
+  margin-top: 5px;
+}
+
+.info {
+  padding: 10px;
+  border-radius: 4px;
+  margin: 0;
+  text-align: center;
+  font-size: 0.9em;
+}
+
+.info p {
+  margin: 5px 0;
+}
+
+.info a {
+  color: #007bff;
+  text-decoration: none;
+}
+
+.info a:hover {
+  text-decoration: underline;
+}
+.refresh-button {
+  padding: 10px 15px;
+  border-radius: 4px;
+  cursor: pointer;
+  border: none;
+}
+.refresh-button :onclick {
+  padding: 10px 15px;
+  border-radius: 4px;
+  cursor: pointer;
+  border: none;
+}
+.refresh-button:hover {
+  background-color: #c38154; /* Medium brown on hover */
+}
+
+.refresh-button:active {
+  background-color: #a15b3d; /* Darker brown when button is clicked */
+}
+.loading-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 100%; /* Ensures it fills the available space in its parent */
+  box-sizing: border-box; /* Includes padding and border in the element's total width and height */
 }
