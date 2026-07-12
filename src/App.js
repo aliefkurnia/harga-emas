@@ -1,276 +1,213 @@
 import * as React from "react";
-import IconButton from "@mui/material/IconButton";
-import { useTheme, ThemeProvider, createTheme } from "@mui/material/styles";
+import { ThemeProvider, createTheme } from "@mui/material/styles";
 import Brightness4Icon from "@mui/icons-material/Brightness4";
 import Brightness7Icon from "@mui/icons-material/Brightness7";
+import RefreshIcon from "@mui/icons-material/Refresh";
+import AccessTimeIcon from "@mui/icons-material/AccessTime";
+import CurrencyExchangeIcon from "@mui/icons-material/CurrencyExchange";
+import LinkIcon from "@mui/icons-material/Link";
 import "./App.css";
 import PriceCard from "./pricecard";
-import dollar from "./images/dollar.png";
-import rupiah from "./images/indonesian-rupiah.png";
-import bi from "./images/BI.png";
-import GradientCircularProgress from "./GradientCircularProgress"; // Import the GradientCircularProgress component
-import PurchasePopup from "./PurchasePopup"; // Import the new component
+import KursCard from "./KursCard";
+import AntamTable from "./AntamTable";
+import GradientCircularProgress from "./GradientCircularProgress";
+import PurchasePopup from "./PurchasePopup";
 
-const ColorModeContext = React.createContext({ toggleColorMode: () => {} });
-
-function App() {
-  const theme = useTheme();
-  const colorMode = React.useContext(ColorModeContext);
+function App({ mode, toggleColorMode }) {
   const [data, setData] = React.useState(null);
   const [error, setError] = React.useState(null);
   const [currency, setCurrency] = React.useState("USD");
   const [grams, setGrams] = React.useState("");
   const [totalPrice, setTotalPrice] = React.useState(null);
-  const [formError, setFormError] = React.useState(""); // State for form errors
+  const [formError, setFormError] = React.useState("");
 
-  const fetchData = () => {
+  const fetchData = React.useCallback(() => {
     fetch("https://update-emas.vercel.app")
       .then((response) => response.json())
-      .then((data) => {
-        setData(data);
-        setError(null); // Clear any previous errors
+      .then((result) => {
+        setData(result);
+        setError(null);
       })
-      .catch((error) => setError(error));
-  };
+      .catch((err) => setError(err));
+  }, []);
 
   React.useEffect(() => {
     fetchData();
-  }, [currency, grams]);
+  }, [fetchData]);
 
   const handleCalculate = () => {
     if (!grams || isNaN(grams) || grams <= 0) {
-      setFormError("Please enter a valid number of grams");
+      setFormError("Masukkan jumlah gram yang valid");
       return;
     }
-
-    if (!data) return; // Ensure data is loaded before proceeding
+    if (!data) return;
 
     let pricePerGram;
     if (currency === "USD") {
-      pricePerGram = parseFloat(data.usd.gr.replace(",", ""));
-    } else if (currency === "IDR") {
-      pricePerGram = parseFloat(data.idr.gr.replace(".", "").replace(",", "."));
+      pricePerGram = parseFloat(data.usd.gr.replace(/\./g, "").replace(",", "."));
+    } else {
+      pricePerGram = parseFloat(data.idr.gr.replace(/\./g, "").replace(",", "."));
     }
 
-    setTotalPrice(pricePerGram * grams);
-    setFormError(""); // Clear any previous errors
+    setTotalPrice(pricePerGram * parseFloat(grams));
+    setFormError("");
   };
 
-  const handleRefresh = () => {
-    fetchData();
+  const handleKeyDown = (e) => {
+    if (e.key === "Enter") handleCalculate();
+  };
+
+  const formatResult = (value) => {
+    if (currency === "USD") {
+      return `$ ${value.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+    }
+    return `Rp ${value.toLocaleString("id-ID", { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`;
   };
 
   return (
-    <div
-      className="App"
-      style={{
-        backgroundColor: theme.palette.background.default,
-        color: theme.palette.text.primary,
-      }}
-    >
-      <header
-        className="App-header"
-        style={{ backgroundColor: theme.palette.primary.main }}
-      >
-        <h1>Gold Price Calculator</h1>
-        <IconButton
-          sx={{ ml: 1 }}
-          onClick={colorMode.toggleColorMode}
-          color="inherit"
-        >
-          {theme.palette.mode === "dark" ? (
-            <Brightness7Icon />
-          ) : (
-            <Brightness4Icon />
-          )}
-        </IconButton>
+    <div className="App" data-theme={mode}>
+      <header className="App-header">
+        <div className="header-brand">
+          <div className="gold-icon">
+            <span>Au</span>
+          </div>
+          <h1>Gold Price</h1>
+        </div>
+        <button className="theme-toggle" onClick={toggleColorMode} aria-label="Toggle theme">
+          {mode === "dark" ? <Brightness7Icon fontSize="small" /> : <Brightness4Icon fontSize="small" />}
+        </button>
       </header>
 
       <main className="App-content">
-        {error && <p className="error">Error fetching data: {error.message}</p>}
+        {error && (
+          <div className="error-message">
+            Gagal mengambil data: {error.message}
+          </div>
+        )}
+
         {data ? (
           <>
-            <section className="info">
-              <p>Gold Price Updated: {data.update_gold_price}</p>
-              <p>Kurs BI Updated: {data.update_kurs_bi}</p>
-              <p>
-                Source:{" "}
-                <a href={data.source} target="_blank" rel="noopener noreferrer">
-                  {data.source}
-                </a>
-              </p>
-              <button
-                className="refresh-button"
-                onClick={handleRefresh}
-                style={{
-                  backgroundColor: theme.palette.secondary.main,
-                  color: theme.palette.secondary.contrastText,
-                }}
-              >
-                Refresh Data
+            <div className="info-bar">
+              <div className="info-details">
+                <span className="info-item">
+                  <AccessTimeIcon className="icon" sx={{ fontSize: 16 }} />
+                  Update: {data.update_gold_price}
+                </span>
+                <span className="info-item">
+                  <CurrencyExchangeIcon className="icon" sx={{ fontSize: 16 }} />
+                  {data.update_kurs_bi}
+                </span>
+                <span className="info-item">
+                  <LinkIcon className="icon" sx={{ fontSize: 16 }} />
+                  <a href={data.source} target="_blank" rel="noopener noreferrer">
+                    Sumber data
+                  </a>
+                </span>
+              </div>
+              <button className="refresh-btn" onClick={fetchData}>
+                <RefreshIcon sx={{ fontSize: 16 }} />
+                Refresh
               </button>
+            </div>
+
+            <section className="cards-section">
+              <h2>Harga Emas Dunia</h2>
+              <div className="card-container">
+                <PriceCard
+                  title="USD"
+                  subtitle="US Dollar"
+                  data={data.usd}
+                  symbol="$"
+                />
+                <PriceCard
+                  title="IDR"
+                  subtitle="Rupiah"
+                  data={data.idr}
+                  symbol="Rp"
+                />
+                <KursCard data={data.kurs_bi} />
+              </div>
             </section>
-            <section className="card-container">
-              <PriceCard title="USD" data={data.usd} imageUrl={dollar} />
-              <PriceCard title="IDR" data={data.idr} imageUrl={rupiah} />
-              <PriceCard title="Kurs BI" data={data.kurs_bi} imageUrl={bi} />
-            </section>
-            <section className="calculator">
-              <div
-                className="calculator-container"
-                style={{
-                  backgroundColor: theme.palette.background.paper,
-                  color: theme.palette.text.primary,
-                  boxShadow: theme.shadows[5],
-                  borderRadius: "8px",
-                  padding: "20px",
-                }}
-              >
-                <article className="calculator-form">
-                  <h2>Calculate Gold Price</h2>
+
+            {data.antam && Object.keys(data.antam).length > 0 && (
+              <section className="cards-section">
+                <h2>Harga Emas Antam (UBS)</h2>
+                <AntamTable data={data.antam} />
+              </section>
+            )}
+
+            <section className="calculator-section">
+              <h2>Kalkulator Emas</h2>
+              <div className="calculator-card">
+                <div className="calc-form">
                   <div className="form-group">
-                    <label>
-                      Currency:
-                      <select
-                        value={currency}
-                        onChange={(e) => {
-                          setCurrency(e.target.value);
-                        }}
-                        style={{
-                          backgroundColor: theme.palette.background.default,
-                          color: theme.palette.text.primary,
-                          border: `1px solid ${theme.palette.divider}`,
-                        }}
-                      >
-                        <option value="USD">USD</option>
-                        <option value="IDR">IDR</option>
-                      </select>
-                    </label>
+                    <label>Mata Uang</label>
+                    <select value={currency} onChange={(e) => setCurrency(e.target.value)}>
+                      <option value="USD">USD - US Dollar</option>
+                      <option value="IDR">IDR - Rupiah</option>
+                    </select>
                   </div>
                   <div className="form-group">
-                    <label>
-                      Grams of gold:
-                      <input
-                        type="number"
-                        value={grams}
-                        onChange={(e) => {
-                          const value = e.target.value;
-                          if (value.length <= 20) {
-                            // Limit to 12 digits
-                            setGrams(value);
-                          }
-                        }}
-                        style={{
-                          backgroundColor: theme.palette.background.default,
-                          color: theme.palette.text.primary,
-                          border: `1px solid ${theme.palette.divider}`,
-                        }}
-                      />
-                    </label>
+                    <label>Berat (gram)</label>
+                    <input
+                      type="number"
+                      value={grams}
+                      onChange={(e) => {
+                        if (e.target.value.length <= 20) setGrams(e.target.value);
+                      }}
+                      onKeyDown={handleKeyDown}
+                      placeholder="Masukkan gram"
+                    />
                     {formError && <p className="form-error">{formError}</p>}
                   </div>
-                  <button
-                    className="calculate-button"
-                    onClick={handleCalculate}
-                    style={{
-                      backgroundColor: theme.palette.secondary.main,
-                      color: theme.palette.secondary.contrastText,
-                    }}
-                  >
-                    Calculate
+                  <button className="calc-btn" onClick={handleCalculate}>
+                    Hitung
                   </button>
-                  {totalPrice !== null && (
-                    <div className="result">
-                      <h3>
-                        Total Price: {currency} {totalPrice.toLocaleString()}
-                      </h3>
-                    </div>
-                  )}
-                </article>
+                </div>
+                {totalPrice !== null && (
+                  <div className="calc-result">
+                    <p className="result-label">
+                      Total harga {grams} gram emas
+                    </p>
+                    <p className="result-value">{formatResult(totalPrice)}</p>
+                  </div>
+                )}
               </div>
             </section>
           </>
         ) : (
           <div className="loading-container">
             <GradientCircularProgress />
+            <p>Memuat harga emas...</p>
           </div>
         )}
+
         <PurchasePopup />
       </main>
-      <footer
-        className="App-footer"
-        style={{ backgroundColor: theme.palette.primary.main }}
-      >
-        <p>&copy; 2024 Muchammad Alief Kurnia. For Portofolio Only.</p>
+
+      <footer className="App-footer">
+        <p>&copy; 2024 Muchammad Alief Kurnia</p>
       </footer>
     </div>
   );
 }
 
-export default function ToggleColorMode() {
-  const [mode, setMode] = React.useState("light");
-  const colorMode = React.useMemo(
-    () => ({
-      toggleColorMode: () => {
-        setMode((prevMode) => (prevMode === "light" ? "dark" : "light"));
-      },
-    }),
-    []
-  );
+const theme = createTheme({
+  typography: {
+    fontFamily: "'Inter', sans-serif",
+  },
+});
 
-  const theme = React.useMemo(
-    () =>
-      createTheme({
-        palette: {
-          mode,
-          ...(mode === "dark"
-            ? {
-                primary: {
-                  main: "#884a39", // dark brown for header/footer in dark mode
-                },
-                background: {
-                  default: "#292929",
-                  paper: "#333333",
-                },
-                text: {
-                  primary: "#ffffff",
-                  secondary: "#aaaaaa",
-                },
-                secondary: {
-                  main: "#c38154", // medium brown for buttons in dark mode
-                  contrastText: "#ffffff",
-                },
-              }
-            : {
-                primary: {
-                  main: "#cc6b53", // dark brown for header/footer in light mode
-                },
-                background: {
-                  default: "#f9e0bb",
-                  paper: "#ffffff",
-                },
-                text: {
-                  primary: "#000000",
-                  secondary: "#4f4f4f",
-                },
-                secondary: {
-                  main: "#ffc26f", // light orange for buttons in light mode
-                  contrastText: "#884a39",
-                },
-              }),
-        },
-        typography: {
-          fontFamily: "Arial, sans-serif",
-        },
-      }),
-    [mode]
-  );
+export default function ToggleColorMode() {
+  const [mode, setMode] = React.useState("dark");
+
+  const toggleColorMode = () => {
+    setMode((prev) => (prev === "light" ? "dark" : "light"));
+  };
 
   return (
-    <ColorModeContext.Provider value={colorMode}>
-      <ThemeProvider theme={theme}>
-        <App />
-      </ThemeProvider>
-    </ColorModeContext.Provider>
+    <ThemeProvider theme={theme}>
+      <App mode={mode} toggleColorMode={toggleColorMode} />
+    </ThemeProvider>
   );
 }

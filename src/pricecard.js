@@ -1,57 +1,97 @@
 import React from "react";
-import Card from "@mui/material/Card";
-import CardContent from "@mui/material/CardContent";
-import Typography from "@mui/material/Typography";
-import { Box } from "@mui/material";
 
-const PriceCard = ({ title, data, imageUrl }) => {
+const PriceCard = ({ title, subtitle, data, symbol }) => {
   if (!data) return null;
 
   return (
-    <Card
-      sx={{
-        width: 300,
-        height: 180,
-        margin: "20px",
-        position: "relative",
-        overflow: "visible",
-        display: "flex",
-        flexDirection: "column",
-        justifyContent: "space-between",
-        boxShadow: 3,
-        borderRadius: 2,
-      }}
-    >
-      <Box
-        component="img"
-        src={imageUrl}
-        alt={`${title} logo`}
-        sx={{
-          position: "absolute",
-          top: -20,
-          right: -20,
-          width: 80,
-          height: 80,
-          borderRadius: "50%",
-          objectFit: "contain",
-        }}
-      />
-      <CardContent sx={{ flexGrow: 1 }}>
-        <Typography gutterBottom variant="h5" component="div">
-          {title}
-        </Typography>
-        <Typography>
-          <strong>Price per</strong>
-        </Typography>
-        <Typography variant="body2" color="text.secondary">
-          <strong> Gram:</strong> {data?.gr}
-          <br />
-          <strong>Ounce:</strong> {data?.oz}
-          <br />
-          <strong>Kilogram:</strong> {data?.kg}
-        </Typography>
-      </CardContent>
-    </Card>
+    <div className="price-card">
+      <div className="price-card-header">
+        <div>
+          <h3 className="price-card-title">{title}</h3>
+          <span className="price-card-subtitle">{subtitle}</span>
+        </div>
+        <span className="price-card-symbol">{symbol || title}</span>
+      </div>
+      <div className="price-card-body">
+        <div className="price-row">
+          <span className="price-label">Per Gram</span>
+          <span className="price-value">{data?.gr}</span>
+        </div>
+        <div className="price-row">
+          <span className="price-label">Per Ounce</span>
+          <span className="price-value">{data?.oz}</span>
+        </div>
+        <div className="price-row">
+          <span className="price-label">Per Kilogram</span>
+          <span className="price-value">{data?.kg}</span>
+        </div>
+      </div>
+
+      <style>{`
+        .price-card {
+          background: var(--surface);
+          border: 1px solid var(--surface-border);
+          border-radius: var(--radius);
+          padding: 1.5rem;
+          transition: all var(--transition);
+        }
+        .price-card:hover {
+          border-color: rgba(212, 168, 83, 0.35);
+          box-shadow: var(--shadow-gold);
+          transform: translateY(-4px);
+        }
+        .price-card-header {
+          display: flex;
+          align-items: flex-start;
+          justify-content: space-between;
+          margin-bottom: 1.25rem;
+          padding-bottom: 1rem;
+          border-bottom: 1px solid var(--surface-border);
+        }
+        .price-card-title {
+          font-size: 1.15rem;
+          font-weight: 700;
+          color: var(--text);
+          margin: 0;
+        }
+        .price-card-subtitle {
+          font-size: 0.78rem;
+          color: var(--text-muted);
+        }
+        .price-card-symbol {
+          font-size: 0.85rem;
+          font-weight: 700;
+          background: var(--gradient-gold);
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: transparent;
+          background-clip: text;
+          padding: 0.3rem 0.75rem;
+          border: 1px solid rgba(212, 168, 83, 0.2);
+          border-radius: 100px;
+        }
+        .price-card-body {
+          display: flex;
+          flex-direction: column;
+          gap: 0.75rem;
+        }
+        .price-row {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+        }
+        .price-label {
+          font-size: 0.8rem;
+          color: var(--text-muted);
+          font-weight: 500;
+        }
+        .price-value {
+          font-size: 0.95rem;
+          font-weight: 600;
+          color: var(--text);
+          font-variant-numeric: tabular-nums;
+        }
+      `}</style>
+    </div>
   );
 };
 
